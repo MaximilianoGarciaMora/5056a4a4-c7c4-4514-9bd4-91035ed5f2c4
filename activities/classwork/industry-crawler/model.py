@@ -5,9 +5,7 @@ import requests
 
 from bs4 import BeautifulSoup
 
-
 logger = logging.getLogger(__name__)
-
 
 class AbstractIndustry(object):
 
@@ -16,9 +14,8 @@ class AbstractIndustry(object):
         self.title = title
         self.children = children
 
-    @property
     def level(self):
-        raise NotImplementedError("Abstract industry doesn't contains level.")
+        raise NotImplementedError ("Abstract industry doesn't contains level")
 
     def add_child(self, child):
         self.children.append(child)
@@ -34,10 +31,8 @@ class AbstractIndustry(object):
     def jsonify(self):
         return json.dumps(self.to_dict())
 
-
 class Division(AbstractIndustry):
     level = "SIC Division"
-
 
 class MajorGroup(AbstractIndustry):
     level = "SIC Major Group"
@@ -47,9 +42,7 @@ class MajorGroup(AbstractIndustry):
         response = requests.get(url)
         html = BeautifulSoup(response.text, 'html.parser')
         return MajorGroup(
-            title=[
-                elm.text for elm in html.find_all("h2") if elm.text.lower().startswith("major group")
-            ][0],
+            title=[elm.text for elm in html.find_all("h2") if elm.text.lower().startswith("major group")][0],
             children=[
                 Group(
                     title=group.text,
@@ -81,18 +74,18 @@ class SIC(AbstractIndustry):
 
     @staticmethod
     def load_json(filename):
-        with open(filename, "r") as file:
+        with open(filename, "r") as file: # r porque quiero que lea el file
             sic_industries = json.loads(file.read())
         return sic_industries
 
     @staticmethod
     def from_url(url):
         response = requests.get(url)
-        html = BeautifulSoup(response.text, 'html.parser')
+        html = BeautifulSoup(response.text, "html.parser")
         divisions = []
         for element in html.find_all("a"):
             href = element.attrs.get("href", "")
-            title = element.attrs.get("title", "")
+            title = element.attrs.get("href", "")
             if not href.startswith("sic_manual"):
                 continue
             elif href.endswith("division"):
